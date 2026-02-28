@@ -38,7 +38,6 @@ body {
     align-items: center;
 }
 
-/* Logo central latiendo */
 #main-logo {
     max-width: 96%;
     max-height: 48vh;
@@ -52,17 +51,13 @@ body {
     100% { transform: scale(1); }
 }
 
-/* Logo pequeño */
 #secondary-logo {
     position: absolute;
     top: 1rem;
     right: 1rem;
     width: 70px;
-    height: auto;
-    z-index: 3;
 }
 
-/* Hora */
 #time-display {
     position: absolute;
     top: 1rem;
@@ -71,21 +66,17 @@ body {
     background: rgba(0,0,0,0.5);
     padding: 0.5rem 1rem;
     border-radius: 5px;
-    font-size: 1.2rem;
-    z-index: 3;
 }
 
-/* GIF abajo a la izquierda */
 #left-gif {
     position: absolute;
     left: 1rem;
     bottom: 1rem;
     width: 100px;
-    height: auto;
-    z-index: 2;
+    cursor: pointer;
 }
 
-/* Botón debajo del logo central */
+/* BOTÓN RADIO */
 #live-button {
     margin-top: 20px;
     padding: 0.75rem 2rem;
@@ -97,19 +88,106 @@ body {
     border-radius: 50px;
     cursor: pointer;
     box-shadow: 0 0 20px rgba(37,99,235,0.8);
-    z-index: 2;
-    position: relative;
 }
 
-/* Video de fondo */
-#background-video {
+/* BOTÓN COMENTAR */
+#comment-button {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    padding: 0.7rem 1.8rem;
+    background: linear-gradient(45deg, #22c55e, #16a34a);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(34,197,94,0.7);
+    transition: 0.3s;
+}
+
+#comment-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px rgba(34,197,94,1);
+}
+
+/* CAJA DE COMENTARIO */
+#random-comment {
+    position: absolute;
+    right: 1rem;
+    bottom: 5.2rem;
+    width: 280px;
+    min-height: 60px;
+    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    padding: 15px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+/* Animación tipo transmisión */
+.live-animation {
+    animation: slideIn 0.8s ease forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* MODAL */
+#comment-modal {
     position: fixed;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    background: rgba(0,0,0,0.7);
     display: none;
-    z-index: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    padding: 25px;
+    border-radius: 15px;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: white;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    animation: fadeIn 0.4s ease;
+}
+
+.modal-content input,
+.modal-content textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+.modal-content button {
+    padding: 10px;
+    border-radius: 50px;
+    border: none;
+    background: #22c55e;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
 }
 </style>
 </head>
@@ -118,13 +196,20 @@ body {
 
 <img src="animacion.gif" id="left-gif" alt="GIF animado">
 
-<video id="background-video">
-    <source src="fondo-video.mp4" type="video/mp4">
-</video>
+<div id="random-comment">No hay comentarios aún.</div>
+<button id="comment-button">COMENTAR</button>
+
+<div id="comment-modal">
+    <div class="modal-content">
+        <input type="text" id="name-input" placeholder="Tu nombre">
+        <textarea id="comment-input" placeholder="Escribe tu comentario"></textarea>
+        <button id="send-comment">ENVIAR</button>
+    </div>
+</div>
 
 <div class="radio-container">
-    <img src="logo.png" id="secondary-logo" alt="Logo pequeño">
-    <img src="logo.png" id="main-logo" alt="Logo principal">
+    <img src="logo.png" id="secondary-logo">
+    <img src="logo.png" id="main-logo">
 
     <div id="time-display">
         <span id="current-time">00:00</span>
@@ -141,19 +226,17 @@ body {
 const radio = document.getElementById('radio-player');
 const button = document.getElementById('live-button');
 const timeEl = document.getElementById('current-time');
-const video = document.getElementById('background-video');
-const mainLogo = document.getElementById('main-logo');
 const leftGif = document.getElementById('left-gif');
 
-/* BOTÓN RADIO */
+leftGif.addEventListener('click', () => {
+    window.open("https://tusitio.com", "_blank");
+});
+
 button.addEventListener('click', () => {
     if (radio.paused) {
-        radio.play().then(() => {
-            button.textContent = 'DETENER REPRODUCCIÓN';
-            button.style.backgroundColor = '#dc2626';
-        }).catch(err => {
-            alert('No se pudo reproducir la radio: ' + err.message);
-        });
+        radio.play();
+        button.textContent = 'DETENER REPRODUCCIÓN';
+        button.style.backgroundColor = '#dc2626';
     } else {
         radio.pause();
         button.textContent = 'ESCÚCHANOS EN VIVO';
@@ -161,39 +244,68 @@ button.addEventListener('click', () => {
     }
 });
 
-/* HORA */
 function updateTime() {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2,'0');
-    const minutes = String(now.getMinutes()).padStart(2,'0');
-    timeEl.textContent = `${hours}:${minutes}`;
+    timeEl.textContent =
+        String(now.getHours()).padStart(2,'0') + ":" +
+        String(now.getMinutes()).padStart(2,'0');
 }
-updateTime();
 setInterval(updateTime, 1000);
+updateTime();
 
-/* VIDEO CADA 10 MINUTOS */
-setInterval(() => {
-    const estabaSonando = !radio.paused;
+/* SISTEMA DE COMENTARIOS */
+const commentButton = document.getElementById('comment-button');
+const modal = document.getElementById('comment-modal');
+const sendBtn = document.getElementById('send-comment');
+const nameInput = document.getElementById('name-input');
+const commentInput = document.getElementById('comment-input');
+const randomCommentBox = document.getElementById('random-comment');
 
-    mainLogo.style.display = 'none';
-    leftGif.style.display = 'none';
-    button.style.display = 'none';
+let comments = JSON.parse(localStorage.getItem("comments")) || [];
 
-    radio.pause();
-    video.style.display = 'block';
-    video.currentTime = 0;
-    video.play();
+function showRandomComment() {
+    if (comments.length === 0) {
+        randomCommentBox.textContent = "No hay comentarios aún.";
+        return;
+    }
 
-    video.onended = () => {
-        video.style.display = 'none';
+    const random = comments[Math.floor(Math.random() * comments.length)];
 
-        mainLogo.style.display = 'block';
-        leftGif.style.display = 'block';
-        button.style.display = 'inline-block';
+    randomCommentBox.classList.remove("live-animation");
+    void randomCommentBox.offsetWidth;
 
-        if (estabaSonando) radio.play();
-    };
-}, 600000);
+    randomCommentBox.innerHTML =
+        "📡 <strong>EN VIVO</strong><br><br>" +
+        "<strong>" + random.name + ":</strong><br>" +
+        random.comment;
+
+    randomCommentBox.classList.add("live-animation");
+}
+
+commentButton.addEventListener('click', () => {
+    modal.style.display = "flex";
+});
+
+sendBtn.addEventListener('click', () => {
+    if (nameInput.value && commentInput.value) {
+        comments.push({
+            name: nameInput.value,
+            comment: commentInput.value
+        });
+        localStorage.setItem("comments", JSON.stringify(comments));
+        nameInput.value = "";
+        commentInput.value = "";
+        modal.style.display = "none";
+        showRandomComment();
+    }
+});
+
+modal.addEventListener('click', e => {
+    if (e.target === modal) modal.style.display = "none";
+});
+
+setInterval(showRandomComment, 5000);
+showRandomComment();
 </script>
 
 </body>
