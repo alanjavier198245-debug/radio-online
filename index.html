@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Radio UGA - Estás en línea!!</title>
+<title>Radio UGA - En Vivo</title>
 
 <style>
 *{
@@ -13,287 +13,187 @@
     font-family:Arial, sans-serif;
 }
 
-body{
-    min-height:100vh;
-    overflow:hidden;
-    background:linear-gradient(90deg,#1e3a8a,#dc2626,#22c55e,#1e3a8a);
-    background-size:300% 300%;
-    animation:gradientAnimation 15s ease infinite;
+body, html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #000;
 }
 
-@keyframes gradientAnimation{
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
+/* REPRODUCTOR DE TWITCH COMO FONDO TOTAL */
+#twitch-embed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
 }
 
-.radio-container{
-    position:relative;
-    width:100%;
-    height:100vh;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    z-index:1;
+/* CAPA INTERACTIVA (Detecta clics para mostrar controles) */
+#interaction-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    cursor: pointer;
 }
 
-/* LOGO PRINCIPAL */
-#main-logo{
-    max-width:90%;
-    max-height:45vh;
-    margin-bottom:2rem;
-    animation:heartbeat 1.5s ease infinite;
+/* ELEMENTOS PERSISTENTES (LOGO Y HORA) */
+#secondary-logo {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 80px;
+    z-index: 10;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+    pointer-events: none;
 }
 
-@keyframes heartbeat{
-    0%{transform:scale(1);}
-    50%{transform:scale(1.1);}
-    100%{transform:scale(1);}
+#time-display {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    color: white;
+    background: rgba(0,0,0,0.6);
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    z-index: 10;
+    backdrop-filter: blur(5px);
 }
 
-/* LOGO SUPERIOR DERECHO */
-#secondary-logo{
-    position:absolute;
-    top:1rem;
-    right:1rem;
-    width:70px;
-    z-index:5;
+/* BOTONES CENTRALES */
+.btn-control {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 1.2rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    z-index: 15;
+    transition: opacity 0.5s ease;
 }
 
-/* HORA */
-#time-display{
-    position:absolute;
-    top:1rem;
-    left:1rem;
-    color:white;
-    background:rgba(0,0,0,0.5);
-    padding:0.5rem 1rem;
-    border-radius:8px;
-    z-index:5;
+#live-button {
+    background: #2563eb;
+    box-shadow: 0 0 30px rgba(37,99,235,0.6);
+    display: block;
 }
 
-/* GIF */
-#left-gif{
-    position:absolute;
-    left:1rem;
-    bottom:1rem;
-    width:100px;
-    cursor:pointer;
-    z-index:5;
+#stop-button {
+    background: #dc2626;
+    box-shadow: 0 0 30px rgba(220,38,38,0.6);
+    display: none;
+    opacity: 0;
 }
 
-/* BOTÓN RADIO */
-#live-button{
-    padding:0.8rem 2rem;
-    font-size:1rem;
-    font-weight:bold;
-    color:white;
-    background:#2563eb;
-    border:none;
-    border-radius:50px;
-    cursor:pointer;
-    box-shadow:0 0 20px rgba(37,99,235,0.8);
-    transition:0.3s;
+/* GIF INFERIOR */
+#left-gif {
+    position: absolute;
+    left: 1.5rem;
+    bottom: 1.5rem;
+    width: 90px;
+    z-index: 10;
+    cursor: pointer;
+    transition: transform 0.3s;
 }
 
-#live-button:hover{
-    transform:scale(1.1);
-}
-
-/* BOTÓN COMENTAR */
-#comment-button{
-    position:absolute;
-    right:1rem;
-    bottom:1rem;
-    padding:0.7rem 1.8rem;
-    background:linear-gradient(45deg,#22c55e,#16a34a);
-    color:white;
-    border:none;
-    border-radius:50px;
-    cursor:pointer;
-    font-weight:bold;
-    z-index:5;
-}
-
-/* CONTENEDOR FLOTANTE */
-#floating-comments{
-    position:absolute;
-    bottom:0;
-    left:0;
-    width:100%;
-    pointer-events:none;
-    z-index:2;
-}
-
-/* BURBUJA */
-.comment-bubble{
-    position:absolute;
-    bottom:0;
-    background:rgba(0,0,0,0.75);
-    color:white;
-    padding:10px 15px;
-    border-radius:20px;
-    font-size:0.85rem;
-    animation:floatUp 6s linear forwards;
-    box-shadow:0 0 15px rgba(0,0,0,0.5);
-}
-
-@keyframes floatUp{
-    0%{transform:translateY(0);opacity:1;}
-    100%{transform:translateY(-400px);opacity:0;}
-}
-
-/* MODAL */
-#comment-modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.7);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index:10;
-}
-
-.modal-content{
-    background:#0f172a;
-    padding:25px;
-    border-radius:15px;
-    width:320px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    color:white;
-}
-
-.modal-content input,
-.modal-content textarea{
-    padding:10px;
-    border-radius:8px;
-    border:none;
-}
-
-.modal-content button{
-    padding:10px;
-    border-radius:50px;
-    border:none;
-    background:#22c55e;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-}
+#left-gif:hover { transform: scale(1.1); }
 </style>
 </head>
 
 <body>
 
+<!-- FONDO DE VIDEO -->
+<div id="twitch-embed"></div>
+
+<!-- CAPA DE INTERACCIÓN -->
+<div id="interaction-layer"></div>
+
+<img src="logo.png" id="secondary-logo">
+<div id="time-display"><span id="current-time"></span></div>
 <img src="animacion.gif" id="left-gif">
 
-<div id="floating-comments"></div>
-<button id="comment-button">COMENTAR</button>
+<!-- CONTROLES -->
+<button id="live-button" class="btn-control">ESCÚCHANOS EN VIVO</button>
+<button id="stop-button" class="btn-control">DETENER REPRODUCCIÓN</button>
 
-<div id="comment-modal">
-    <div class="modal-content">
-        <input type="text" id="name-input" placeholder="Tu nombre">
-        <textarea id="comment-input" placeholder="Escribe tu comentario"></textarea>
-        <button id="send-comment">ENVIAR</button>
-    </div>
-</div>
+<audio id="radio-player">
+    <source src="https://stream.zeno.fm" type="audio/mpeg">
+</audio>
 
-<div class="radio-container">
-    <img src="logo.png" id="secondary-logo">
-    <div id="time-display"><span id="current-time"></span></div>
-
-    <img src="logo.png" id="main-logo">
-
-    <button id="live-button">ESCÚCHANOS EN VIVO</button>
-
-    <audio id="radio-player">
-        <source src="https://stream.zeno.fm/pngmqyzqcuhvv" type="audio/mpeg">
-    </audio>
-</div>
-
-<audio id="comment-sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+<!-- CARGA DE TWITCH -->
+<script src="https://embed.twitch.tv"></script>
+<script type="text/javascript">
+  new Twitch.Embed("twitch-embed", {
+    width: "100%",
+    height: "100%",
+    channel: "sanrafaelradio1",
+    parent: ["alanjavier198245-debug.github.io"],
+    layout: "video",
+    autoplay: true,
+    muted: false 
+  });
+</script>
 
 <script>
-const radio=document.getElementById('radio-player');
-const liveBtn=document.getElementById('live-button');
-const timeEl=document.getElementById('current-time');
-const leftGif=document.getElementById('left-gif');
-const floating=document.getElementById('floating-comments');
-const sound=document.getElementById('comment-sound');
+const radio = document.getElementById('radio-player');
+const liveBtn = document.getElementById('live-button');
+const stopBtn = document.getElementById('stop-button');
+const layer = document.getElementById('interaction-layer');
+const gif = document.getElementById('left-gif');
+let hideTimeout;
 
-/* GIF */
-leftGif.addEventListener('click',()=>{
-    window.open("https://sites.google.com/view/sanrafaelradio/inicio","_blank");
+// Acción del GIF
+gif.addEventListener('click', () => {
+    window.open("https://sites.google.com", "_blank");
 });
 
-/* RADIO */
-liveBtn.addEventListener('click',()=>{
-    if(radio.paused){
-        radio.play();
-        liveBtn.textContent="DETENER REPRODUCCIÓN";
-        liveBtn.style.background="#dc2626";
-    }else{
-        radio.pause();
-        liveBtn.textContent="ESCÚCHANOS EN VIVO";
-        liveBtn.style.background="#2563eb";
+// Iniciar Radio
+liveBtn.addEventListener('click', () => {
+    radio.play();
+    liveBtn.style.display = "none";
+});
+
+// Mostrar/Ocultar botón de Detener al tocar la pantalla
+layer.addEventListener('click', () => {
+    if (!radio.paused) {
+        stopBtn.style.display = "block";
+        setTimeout(() => stopBtn.style.opacity = "1", 10);
+        
+        clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => {
+            stopBtn.style.opacity = "0";
+            setTimeout(() => stopBtn.style.display = "none", 500);
+        }, 3000); // Se oculta tras 3 segundos
     }
 });
 
-/* HORA */
-function updateTime(){
-    const now=new Date();
-    const h=String(now.getHours()).padStart(2,'0');
-    const m=String(now.getMinutes()).padStart(2,'0');
-    timeEl.textContent=h+":"+m;
+// Detener Radio
+stopBtn.addEventListener('click', () => {
+    radio.pause();
+    stopBtn.style.display = "none";
+    liveBtn.style.display = "block";
+});
+
+// Reloj
+function updateTime() {
+    const now = new Date();
+    document.getElementById('current-time').textContent = 
+        now.getHours().toString().padStart(2, '0') + ":" + 
+        now.getMinutes().toString().padStart(2, '0');
 }
-setInterval(updateTime,1000);
+setInterval(updateTime, 1000); 
 updateTime();
-
-/* COMENTARIOS */
-const commentBtn=document.getElementById('comment-button');
-const modal=document.getElementById('comment-modal');
-const sendBtn=document.getElementById('send-comment');
-const nameInput=document.getElementById('name-input');
-const commentInput=document.getElementById('comment-input');
-
-let comments=JSON.parse(localStorage.getItem("comments"))||[];
-
-function createBubble(name,text){
-    const bubble=document.createElement("div");
-    bubble.className="comment-bubble";
-    bubble.style.left=Math.random()*70+"%";
-    bubble.innerHTML="📡 <strong>"+name+":</strong> "+text;
-    floating.appendChild(bubble);
-    sound.play();
-    setTimeout(()=>bubble.remove(),6000);
-}
-
-commentBtn.addEventListener('click',()=>modal.style.display="flex");
-
-sendBtn.addEventListener('click',()=>{
-    if(nameInput.value.trim()&&commentInput.value.trim()){
-        const newComment={name:nameInput.value,comment:commentInput.value};
-        comments.push(newComment);
-        localStorage.setItem("comments",JSON.stringify(comments));
-        createBubble(newComment.name,newComment.comment);
-        nameInput.value="";
-        commentInput.value="";
-        modal.style.display="none";
-    }
-});
-
-modal.addEventListener('click',e=>{
-    if(e.target===modal) modal.style.display="none";
-});
-
-setInterval(()=>{
-    if(comments.length>0){
-        const random=comments[Math.floor(Math.random()*comments.length)];
-        createBubble(random.name,random.comment);
-    }
-},8000);
 </script>
 
 </body>
