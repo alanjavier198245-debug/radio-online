@@ -6,122 +6,64 @@
     <title>Radio UGA - En Vivo</title>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body, html { height: 100%; width: 100%; overflow: hidden; background: #000; }
 
-        body, html {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background: #000;
-        }
-
-        /* CONTENEDOR DE TWITCH COMO FONDO */
+        /* FONDO DE TWITCH */
         #twitch-embed {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             z-index: 1;
         }
+        #twitch-embed iframe { width: 100%; height: 100%; }
 
-        /* Asegura que el iframe interno de Twitch llene el div */
-        #twitch-embed iframe {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* CAPA INTERACTIVA (Para detectar clics) */
+        /* CAPA DE INTERACCIÓN */
         #interaction-layer {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 2;
             cursor: pointer;
         }
 
-        /* ELEMENTOS PERSISTENTES */
+        /* ELEMENTOS UI */
         #secondary-logo {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 80px;
-            z-index: 10;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+            position: absolute; top: 1.5rem; right: 1.5rem;
+            width: 80px; z-index: 10;
             pointer-events: none;
         }
 
         #time-display {
-            position: absolute;
-            top: 1.5rem;
-            left: 1.5rem;
-            color: white;
-            background: rgba(0,0,0,0.6);
-            padding: 0.6rem 1.2rem;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            z-index: 10;
-            backdrop-filter: blur(5px);
+            position: absolute; top: 1.5rem; left: 1.5rem;
+            color: white; background: rgba(0,0,0,0.6);
+            padding: 0.6rem 1.2rem; border-radius: 12px;
+            font-size: 1.2rem; font-weight: bold;
+            z-index: 10; backdrop-filter: blur(5px);
         }
 
-        /* BOTONES DE CONTROL */
         .btn-control {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            padding: 1.2rem 2.5rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            z-index: 15;
-            transition: opacity 0.5s ease;
+            padding: 1.2rem 2.5rem; font-size: 1.1rem;
+            font-weight: bold; color: white; border: none;
+            border-radius: 50px; cursor: pointer;
+            z-index: 15; transition: opacity 0.5s ease;
         }
 
-        #live-button {
-            background: #2563eb;
-            box-shadow: 0 0 30px rgba(37,99,235,0.6);
-            display: block;
-        }
-
-        #stop-button {
-            background: #dc2626;
-            box-shadow: 0 0 30px rgba(220,38,38,0.6);
-            display: none;
-            opacity: 0;
-        }
+        #live-button { background: #2563eb; box-shadow: 0 0 30px rgba(37,99,235,0.6); }
+        #stop-button { background: #dc2626; box-shadow: 0 0 30px rgba(220,38,38,0.6); display: none; opacity: 0; }
 
         #left-gif {
-            position: absolute;
-            left: 1.5rem;
-            bottom: 1.5rem;
-            width: 90px;
-            z-index: 10;
-            cursor: pointer;
-            transition: transform 0.3s;
+            position: absolute; left: 1.5rem; bottom: 1.5rem;
+            width: 90px; z-index: 10; cursor: pointer;
         }
-
-        #left-gif:hover { transform: scale(1.1); }
     </style>
 </head>
 
 <body>
 
-<!-- FONDO DE VIDEO TWITCH -->
 <div id="twitch-embed"></div>
-
-<!-- CAPA DE INTERACCIÓN -->
 <div id="interaction-layer"></div>
 
 <img src="logo.png" id="secondary-logo">
@@ -130,7 +72,6 @@
     <img src="animacion.gif" id="left-gif">
 </a>
 
-<!-- CONTROLES DE AUDIO -->
 <button id="live-button" class="btn-control">ESCÚCHANOS EN VIVO</button>
 <button id="stop-button" class="btn-control">DETENER REPRODUCCIÓN</button>
 
@@ -138,18 +79,19 @@
     <source src="https://stream.zeno.fm" type="audio/mpeg">
 </audio>
 
-<!-- SCRIPT DE TWITCH PLAYER -->
+<!-- SCRIPT DE TWITCH -->
 <script src="https://player.twitch.tv/js/embed/v1.js"></script>
 <script type="text/javascript">
+  var player;
   var options = {
     width: "100%",
     height: "100%",
     channel: "sanrafaelradio1",
-    parent: ["alanjavier198245-debug.github.io"], // Asegúrate que este dominio sea el correcto
-    autoplay: true,
+    parent: ["alanjavier198245-debug.github.io"],
+    autoplay: false, // Empezamos pausado para que el botón lo active
     muted: false
   };
-  var player = new Twitch.Player("twitch-embed", options);
+  player = new Twitch.Player("twitch-embed", options);
 </script>
 
 <script>
@@ -159,18 +101,27 @@ const stopBtn = document.getElementById('stop-button');
 const layer = document.getElementById('interaction-layer');
 let hideTimeout;
 
-// Iniciar Radio
+// FUNCIÓN PARA REPRODUCIR TODO
 liveBtn.addEventListener('click', () => {
-    radio.play();
+    radio.play();        // Inicia el audio
+    player.play();       // Inicia el video de Twitch
     liveBtn.style.display = "none";
 });
 
-// Mostrar/Ocultar botón de Detener al tocar la capa de interacción
+// FUNCIÓN PARA DETENER TODO
+stopBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    radio.pause();       // Pausa audio
+    player.pause();      // Pausa Twitch
+    stopBtn.style.display = "none";
+    liveBtn.style.display = "block";
+});
+
+// Control visual de la capa
 layer.addEventListener('click', () => {
     if (!radio.paused) {
         stopBtn.style.display = "block";
         setTimeout(() => stopBtn.style.opacity = "1", 10);
-        
         clearTimeout(hideTimeout);
         hideTimeout = setTimeout(() => {
             stopBtn.style.opacity = "0";
@@ -179,15 +130,6 @@ layer.addEventListener('click', () => {
     }
 });
 
-// Detener Radio
-stopBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // Evita que el clic active la capa de interacción
-    radio.pause();
-    stopBtn.style.display = "none";
-    liveBtn.style.display = "block";
-});
-
-// Reloj
 function updateTime() {
     const now = new Date();
     document.getElementById('current-time').textContent = 
