@@ -5,181 +5,182 @@
 <title>Radio San Rafael</title>
 
 <style>
-
-body{
-margin:0;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-font-family:Arial;
-transition:background 2s;
-overflow:hidden;
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial;
+  transition: background 2s;
+  overflow: hidden;
 }
 
 /* reloj */
-
-#hora{
-position:absolute;
-top:10px;
-left:20px;
-color:blue;
-font-size:26px;
-font-weight:bold;
+#hora {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  color: blue;
+  font-size: 26px;
+  font-weight: bold;
+  z-index: 10;
 }
 
 /* logo esquina */
-
-#logoTop{
-position:absolute;
-top:10px;
-right:20px;
-width:90px;
+#logoTop {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  width: 90px;
+  z-index: 10;
 }
 
 /* logo central */
-
-#logoCentral{
-width:260px;
-animation:latido 1.5s infinite;
+#logoCentral {
+  width: 260px;
+  animation: latido 1.5s infinite;
 }
 
-/* latido */
-
-@keyframes latido{
-0%{transform:scale(1)}
-25%{transform:scale(1.1)}
-40%{transform:scale(1)}
-60%{transform:scale(1.1)}
-100%{transform:scale(1)}
+@keyframes latido {
+  0% { transform: scale(1) }
+  25% { transform: scale(1.1) }
+  40% { transform: scale(1) }
+  60% { transform: scale(1.1) }
+  100% { transform: scale(1) }
 }
 
 /* boton */
-
-#btnRadio{
-margin-top:20px;
-padding:15px 35px;
-background:#007BFF;
-color:white;
-border:none;
-font-size:20px;
-border-radius:10px;
-cursor:pointer;
+#btnRadio {
+  margin-top: 20px;
+  padding: 15px 35px;
+  background: #007BFF;
+  color: white;
+  border: none;
+  font-size: 20px;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 /* gif */
-
-#gif{
-position:absolute;
-bottom:10px;
-left:10px;
+#gif {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 10;
 }
 
-#gif img{
-width:120px;
+#gif img {
+  width: 120px;
 }
 
 /* contenido */
-
-#contenido{
-text-align:center;
+#contenido {
+  text-align: center;
 }
 
-/* twitch */
-
-#twitchContainer{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-display:none;
+/* CONTENEDOR YOUTUBE (Ocupa todo el ancho) */
+#youtubeContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none; /* Oculto por defecto */
+  background: #000;
+  z-index: 5;
 }
 
-#twitchContainer iframe{
-width:100%;
-height:100%;
-border:none;
+#youtubeContainer iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
-
 </style>
 </head>
 
 <body>
 
 <div id="hora"></div>
-
 <img src="logo.png" id="logoTop">
 
 <div id="contenido">
-
-<img src="logo.png" id="logoCentral">
-
-<br>
-
-<button id="btnRadio" onclick="playRadio()">ESCUCHANOS EN VIVO</button>
-
-<audio id="radio" src="https://stream.zeno.fm/pngmqyzqcuhvv"></audio>
-
+  <img src="logo.png" id="logoCentral">
+  <br>
+  <button id="btnRadio" onclick="playRadio()">ESCUCHANOS EN VIVO</button>
+  <audio id="radio" src="https://stream.zeno.fm/pngmqyzqcuhvv"></audio>
 </div>
 
 <div id="gif">
-<a href="https://alanjavier198245-debug.github.io/Confec4a./" target="_blank">
-<img src="animacion.gif">
-</a>
+  <a href="https://alanjavier198245-debug.github.io/Confec4a./" target="_blank">
+    <img src="animacion.gif">
+  </a>
 </div>
 
-<div id="twitchContainer">
-
-<iframe
-src="https://player.twitch.tv/?channel=sanrafaelradio1&parent=localhost&autoplay=true"
-allowfullscreen>
-</iframe>
-
+<!-- Nuevo contenedor para YouTube -->
+<div id="youtubeContainer">
+  <div id="player"></div>
 </div>
 
 <script>
+/* Reloj */
+function reloj() {
+  let d = new Date();
+  document.getElementById("hora").innerHTML = d.getHours().toString().padStart(2,"0") + ":" + 
+                                              d.getMinutes().toString().padStart(2,"0") + ":" + 
+                                              d.getSeconds().toString().padStart(2,"0");
+}
+setInterval(reloj, 1000);
 
-/* reloj */
-
-function reloj(){
-let d=new Date();
-let h=d.getHours().toString().padStart(2,"0");
-let m=d.getMinutes().toString().padStart(2,"0");
-let s=d.getSeconds().toString().padStart(2,"0");
-
-document.getElementById("hora").innerHTML=h+":"+m+":"+s;
+/* Radio */
+function playRadio() {
+  document.getElementById("radio").play();
 }
 
-setInterval(reloj,1000);
+/* Fondo aleatorio */
+const colores = ["blue", "red", "green", "yellow"];
+function fondo() {
+  document.body.style.background = colores[Math.floor(Math.random() * colores.length)];
+}
+setInterval(fondo, 4000);
 
-/* radio */
+/* --- LÓGICA DE DETECCIÓN DE YOUTUBE LIVE --- */
 
-function playRadio(){
-document.getElementById("radio").play();
+const canalID = "UC9sQKx-dhwB2i-53vkxCiPw";
+
+function checkYouTubeLive() {
+  // Intentamos cargar la imagen de miniatura del directo. 
+  // YouTube solo genera esta imagen 'hqdefault_live.jpg' si hay un directo activo.
+  const img = new Image();
+  img.src = "https://img.youtube.com" + canalID + "&t=" + new Date().getTime();
+  
+  img.onload = function() {
+    // Si la imagen tiene un ancho mayor a 120px, significa que hay un vivo real
+    if (img.width > 120) {
+      activarYouTube();
+    }
+  };
 }
 
-/* fondo aleatorio */
-
-const colores=["blue","red","green","yellow"];
-
-function fondo(){
-let c=colores[Math.floor(Math.random()*colores.length)];
-document.body.style.background=c;
+function activarYouTube() {
+  const container = document.getElementById("youtubeContainer");
+  const contenido = document.getElementById("contenido");
+  
+  // Solo lo activamos si no está ya visible
+  if (container.style.display !== "block") {
+    contenido.style.display = "none";
+    container.style.display = "block";
+    container.innerHTML = `<iframe src="https://www.youtube.com{canalID}&autoplay=1&mute=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    
+    // Si el video entra, pausamos la radio de fondo
+    document.getElementById("radio").pause();
+  }
 }
 
-setInterval(fondo,4000);
-
-/* modo twitch manual */
-
-function activarTwitch(){
-
-document.getElementById("contenido").style.display="none";
-document.getElementById("gif").style.display="none";
-
-document.getElementById("twitchContainer").style.display="block";
-
-}
+// Revisa si estás en vivo cada 30 segundos
+setInterval(checkYouTubeLive, 30000);
+// Revisar al cargar la página
+checkYouTubeLive();
 
 </script>
 
