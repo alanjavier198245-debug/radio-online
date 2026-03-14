@@ -119,7 +119,7 @@ body {
 </head>
 
 <body>
-
+<script>
 <div id="hora"></div>
 <img src="logo.png" id="logoTop">
 
@@ -144,31 +144,7 @@ body {
   <!-- El iframe se cargará aquí solo al presionar el botón -->
 </div>
 
-<script>
-/* Reloj */
-function reloj() {
-  let d = new Date();
-  document.getElementById("hora").innerHTML = d.getHours().toString().padStart(2,"0") + ":" + 
-                                              d.getMinutes().toString().padStart(2,"0") + ":" + 
-                                              d.getSeconds().toString().padStart(2,"0");
-}
-setInterval(reloj, 1000);
-
-/* Radio */
-function playRadio() {
-  document.getElementById("radio").play();
-}
-
-/* Fondo aleatorio */
-const colores = ["blue", "red", "green", "yellow"];
-function fondo() {
-  document.body.style.background = colores[Math.floor(Math.random() * colores.length)];
-}
-setInterval(fondo, 4000);
-
 /* --- FUNCIONES DE VIDEO --- */
-
-const canalID = "UC9sQKx-dhwB2i-53vkxCiPw";
 
 function activarVideo() {
   const container = document.getElementById("youtubeContainer");
@@ -176,19 +152,19 @@ function activarVideo() {
   const btnCerrar = document.getElementById("btnCerrarVideo");
   const radio = document.getElementById("radio");
 
-  // 1. Pausamos la radio para que no se mezclen sonidos
+  // 1. Pausamos la radio
   radio.pause();
 
   // 2. Ocultamos el contenido central y el gif
   contenido.style.display = "none";
   document.getElementById("gif").style.display = "none";
 
-  // 3. Mostramos el contenedor de YouTube y el botón de cerrar
+  // 3. Mostramos el contenedor y el botón de cerrar
   container.style.display = "block";
   btnCerrar.style.display = "block";
 
-  // 4. Insertamos el reproductor de YouTube
-  container.innerHTML = `<iframe src="https://www.youtube.com{canalID}&autoplay=1&mute=0&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  // 4. Insertamos el reproductor con tu ID de canal directamente (SIN VARIABLES)
+  container.innerHTML = '<iframe src="https://www.youtube.com" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
 }
 
 function cerrarVideo() {
@@ -196,16 +172,14 @@ function cerrarVideo() {
   const contenido = document.getElementById("contenido");
   const btnCerrar = document.getElementById("btnCerrarVideo");
 
-  // 1. Vaciamos el contenedor (para que el video deje de sonar)
   container.innerHTML = "";
   container.style.display = "none";
   btnCerrar.style.display = "none";
 
-  // 2. Mostramos de nuevo la radio
   contenido.style.display = "block";
   document.getElementById("gif").style.display = "block";
 }
-</script>
+<script>
 
 </body>
 </html>
