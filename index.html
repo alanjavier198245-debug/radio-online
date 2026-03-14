@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Radio San Rafael</title>
+<!-- CONECTAMOS EL ARCHIVO DEL ID -->
+<script src="vivo.js"></script>
 
 <style>
 body {
@@ -16,31 +18,9 @@ body {
   overflow: hidden;
 }
 
-/* reloj */
-#hora {
-  position: absolute;
-  top: 10px;
-  left: 20px;
-  color: blue;
-  font-size: 26px;
-  font-weight: bold;
-  z-index: 20;
-}
-
-/* logo esquina */
-#logoTop {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  width: 90px;
-  z-index: 20;
-}
-
-/* logo central */
-#logoCentral {
-  width: 260px;
-  animation: latido 1.5s infinite;
-}
+#hora { position: absolute; top: 10px; left: 20px; color: blue; font-size: 26px; font-weight: bold; z-index: 20; }
+#logoTop { position: absolute; top: 10px; right: 20px; width: 90px; z-index: 20; }
+#logoCentral { width: 260px; animation: latido 1.5s infinite; }
 
 @keyframes latido {
   0% { transform: scale(1) }
@@ -50,7 +30,6 @@ body {
   100% { transform: scale(1) }
 }
 
-/* botones */
 .btn-estilo {
   margin-top: 10px;
   padding: 15px 35px;
@@ -66,25 +45,11 @@ body {
 #btnRadio { background: #007BFF; }
 #btnYoutube { background: #FF0000; }
 
-/* gif */
-#gif {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  z-index: 20;
-}
+#gif { position: absolute; bottom: 10px; left: 10px; z-index: 20; }
+#gif img { width: 120px; }
 
-#gif img {
-  width: 120px;
-}
+#contenido { text-align: center; z-index: 10; }
 
-/* contenido principal */
-#contenido {
-  text-align: center;
-  z-index: 10;
-}
-
-/* CONTENEDOR YOUTUBE */
 #youtubeContainer {
   position: absolute;
   top: 0;
@@ -96,11 +61,7 @@ body {
   z-index: 15;
 }
 
-#youtubeContainer iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
+#youtubeContainer iframe { width: 100%; height: 100%; border: none; }
 
 #btnCerrarVideo {
   position: absolute;
@@ -143,7 +104,7 @@ body {
 <div id="youtubeContainer"></div>
 
 <script>
-/* Reloj */
+/* Reloj y Fondo */
 function reloj() {
   let d = new Date();
   document.getElementById("hora").innerHTML = d.getHours().toString().padStart(2,"0") + ":" + 
@@ -152,47 +113,35 @@ function reloj() {
 }
 setInterval(reloj, 1000);
 
-/* Radio */
-function playRadio() {
-  document.getElementById("radio").play();
-}
+function playRadio() { document.getElementById("radio").play(); }
 
-/* Fondo aleatorio */
 const colores = ["blue", "red", "green", "yellow"];
-function fondo() {
+setInterval(() => {
   document.body.style.background = colores[Math.floor(Math.random() * colores.length)];
-}
-setInterval(fondo, 4000);
+}, 4000);
 
 /* --- FUNCIONES DE VIDEO --- */
 
 function activarVideo() {
   const container = document.getElementById("youtubeContainer");
-  const contenido = document.getElementById("contenido");
   const btnCerrar = document.getElementById("btnCerrarVideo");
-  const radio = document.getElementById("radio");
 
-  radio.pause();
-  contenido.style.display = "none";
+  document.getElementById("radio").pause();
+  document.getElementById("contenido").style.display = "none";
   document.getElementById("gif").style.display = "none";
 
   container.style.display = "block";
   btnCerrar.style.display = "block";
 
-  // Aquí el enlace corregido con tu ID de canal
-  container.innerHTML = '<iframe src="https://www.youtube.com" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+  // El reproductor ahora usa la variable que vive en vivo.js
+  container.innerHTML = '<iframe src="https://www.youtube.com' + ID_YOUTUBE_VIVO + '?autoplay=1&mute=0&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
 }
 
 function cerrarVideo() {
-  const container = document.getElementById("youtubeContainer");
-  const contenido = document.getElementById("contenido");
-  const btnCerrar = document.getElementById("btnCerrarVideo");
-
-  container.innerHTML = "";
-  container.style.display = "none";
-  btnCerrar.style.display = "none";
-
-  contenido.style.display = "block";
+  document.getElementById("youtubeContainer").innerHTML = "";
+  document.getElementById("youtubeContainer").style.display = "none";
+  document.getElementById("btnCerrarVideo").style.display = "none";
+  document.getElementById("contenido").style.display = "block";
   document.getElementById("gif").style.display = "block";
 }
 </script>
