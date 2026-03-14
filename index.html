@@ -1,143 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio UGA - En Vivo</title>
+<meta charset="UTF-8">
+<title>Radio San Rafael</title>
 
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-        body, html { height: 100%; width: 100%; overflow: hidden; background: #000; }
+<style>
 
-        /* FONDO DE TWITCH */
-        #twitch-embed {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 1;
-        }
-        #twitch-embed iframe { width: 100%; height: 100%; }
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+font-family:Arial;
+transition:background 2s;
+overflow:hidden;
+}
 
-        /* CAPA DE INTERACCIÓN */
-        #interaction-layer {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 2;
-            cursor: pointer;
-        }
+/* reloj */
 
-        /* ELEMENTOS UI */
-        #secondary-logo {
-            position: absolute; top: 1.5rem; right: 1.5rem;
-            width: 80px; z-index: 10;
-            pointer-events: none;
-        }
+#hora{
+position:absolute;
+top:10px;
+left:20px;
+color:blue;
+font-size:26px;
+font-weight:bold;
+}
 
-        #time-display {
-            position: absolute; top: 1.5rem; left: 1.5rem;
-            color: white; background: rgba(0,0,0,0.6);
-            padding: 0.6rem 1.2rem; border-radius: 12px;
-            font-size: 1.2rem; font-weight: bold;
-            z-index: 10; backdrop-filter: blur(5px);
-        }
+/* logo esquina */
 
-        .btn-control {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 1.2rem 2.5rem; font-size: 1.1rem;
-            font-weight: bold; color: white; border: none;
-            border-radius: 50px; cursor: pointer;
-            z-index: 15; transition: opacity 0.5s ease;
-        }
+#logoTop{
+position:absolute;
+top:10px;
+right:20px;
+width:90px;
+}
 
-        #live-button { background: #2563eb; box-shadow: 0 0 30px rgba(37,99,235,0.6); }
-        #stop-button { background: #dc2626; box-shadow: 0 0 30px rgba(220,38,38,0.6); display: none; opacity: 0; }
+/* logo central */
 
-        #left-gif {
-            position: absolute; left: 1.5rem; bottom: 1.5rem;
-            width: 90px; z-index: 10; cursor: pointer;
-        }
-    </style>
+#logoCentral{
+width:260px;
+animation:latido 1.5s infinite;
+}
+
+/* latido */
+
+@keyframes latido{
+0%{transform:scale(1)}
+25%{transform:scale(1.1)}
+40%{transform:scale(1)}
+60%{transform:scale(1.1)}
+100%{transform:scale(1)}
+}
+
+/* boton */
+
+#btnRadio{
+margin-top:20px;
+padding:15px 35px;
+background:#007BFF;
+color:white;
+border:none;
+font-size:20px;
+border-radius:10px;
+cursor:pointer;
+}
+
+/* gif */
+
+#gif{
+position:absolute;
+bottom:10px;
+left:10px;
+}
+
+#gif img{
+width:120px;
+}
+
+/* contenido */
+
+#contenido{
+text-align:center;
+}
+
+/* twitch */
+
+#twitchContainer{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:none;
+}
+
+#twitchContainer iframe{
+width:100%;
+height:100%;
+border:none;
+}
+
+</style>
 </head>
 
 <body>
 
-<div id="twitch-embed"></div>
-<div id="interaction-layer"></div>
+<div id="hora"></div>
 
-<img src="logo.png" id="secondary-logo">
-<div id="time-display"><span id="current-time"></span></div>
-<a href="https://sites.google.com" target="_blank">
-    <img src="animacion.gif" id="left-gif">
+<img src="logo.png" id="logoTop">
+
+<div id="contenido">
+
+<img src="logo.png" id="logoCentral">
+
+<br>
+
+<button id="btnRadio" onclick="playRadio()">ESCUCHANOS EN VIVO</button>
+
+<audio id="radio" src="https://stream.zeno.fm/pngmqyzqcuhvv"></audio>
+
+</div>
+
+<div id="gif">
+<a href="https://alanjavier198245-debug.github.io/Confec4a./" target="_blank">
+<img src="animacion.gif">
 </a>
+</div>
 
-<button id="live-button" class="btn-control">ESCÚCHANOS EN VIVO</button>
-<button id="stop-button" class="btn-control">DETENER REPRODUCCIÓN</button>
+<div id="twitchContainer">
 
-<audio id="radio-player">
-    <source src="https://stream.zeno.fm" type="audio/mpeg">
-</audio>
+<iframe
+src="https://player.twitch.tv/?channel=sanrafaelradio1&parent=localhost&autoplay=true"
+allowfullscreen>
+</iframe>
 
-<!-- SCRIPT DE TWITCH -->
-<script src="https://player.twitch.tv/js/embed/v1.js"></script>
-<script type="text/javascript">
-  var player;
-  var options = {
-    width: "100%",
-    height: "100%",
-    channel: "sanrafaelradio1",
-    parent: ["alanjavier198245-debug.github.io"],
-    autoplay: false, // Empezamos pausado para que el botón lo active
-    muted: false
-  };
-  player = new Twitch.Player("twitch-embed", options);
-</script>
+</div>
 
 <script>
-const radio = document.getElementById('radio-player');
-const liveBtn = document.getElementById('live-button');
-const stopBtn = document.getElementById('stop-button');
-const layer = document.getElementById('interaction-layer');
-let hideTimeout;
 
-// FUNCIÓN PARA REPRODUCIR TODO
-liveBtn.addEventListener('click', () => {
-    radio.play();        // Inicia el audio
-    player.play();       // Inicia el video de Twitch
-    liveBtn.style.display = "none";
-});
+/* reloj */
 
-// FUNCIÓN PARA DETENER TODO
-stopBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    radio.pause();       // Pausa audio
-    player.pause();      // Pausa Twitch
-    stopBtn.style.display = "none";
-    liveBtn.style.display = "block";
-});
+function reloj(){
+let d=new Date();
+let h=d.getHours().toString().padStart(2,"0");
+let m=d.getMinutes().toString().padStart(2,"0");
+let s=d.getSeconds().toString().padStart(2,"0");
 
-// Control visual de la capa
-layer.addEventListener('click', () => {
-    if (!radio.paused) {
-        stopBtn.style.display = "block";
-        setTimeout(() => stopBtn.style.opacity = "1", 10);
-        clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(() => {
-            stopBtn.style.opacity = "0";
-            setTimeout(() => stopBtn.style.display = "none", 500);
-        }, 3000);
-    }
-});
-
-function updateTime() {
-    const now = new Date();
-    document.getElementById('current-time').textContent = 
-        now.getHours().toString().padStart(2, '0') + ":" + 
-        now.getMinutes().toString().padStart(2, '0');
+document.getElementById("hora").innerHTML=h+":"+m+":"+s;
 }
-setInterval(updateTime, 1000); 
-updateTime();
+
+setInterval(reloj,1000);
+
+/* radio */
+
+function playRadio(){
+document.getElementById("radio").play();
+}
+
+/* fondo aleatorio */
+
+const colores=["blue","red","green","yellow"];
+
+function fondo(){
+let c=colores[Math.floor(Math.random()*colores.length)];
+document.body.style.background=c;
+}
+
+setInterval(fondo,4000);
+
+/* modo twitch manual */
+
+function activarTwitch(){
+
+document.getElementById("contenido").style.display="none";
+document.getElementById("gif").style.display="none";
+
+document.getElementById("twitchContainer").style.display="block";
+
+}
+
 </script>
 
 </body>
