@@ -84,14 +84,14 @@ body {
   z-index: 10;
 }
 
-/* CONTENEDOR YOUTUBE (PANTALLA COMPLETA) */
+/* CONTENEDOR YOUTUBE */
 #youtubeContainer {
   position: absolute;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  display: none; /* Se activa con el botón */
+  display: none;
   background: #000;
   z-index: 15;
 }
@@ -102,24 +102,24 @@ body {
   border: none;
 }
 
-/* Botón para cerrar el video y volver a la radio */
 #btnCerrarVideo {
   position: absolute;
   top: 20px;
   right: 20px;
-  background: rgba(255,255,255,0.7);
+  background: white;
   border: none;
-  padding: 10px;
+  padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
   z-index: 30;
   display: none;
+  font-weight: bold;
 }
 </style>
 </head>
 
 <body>
-<script>
+
 <div id="hora"></div>
 <img src="logo.png" id="logoTop">
 
@@ -140,9 +140,29 @@ body {
   </a>
 </div>
 
-<div id="youtubeContainer">
-  <!-- El iframe se cargará aquí solo al presionar el botón -->
-</div>
+<div id="youtubeContainer"></div>
+
+<script>
+/* Reloj */
+function reloj() {
+  let d = new Date();
+  document.getElementById("hora").innerHTML = d.getHours().toString().padStart(2,"0") + ":" + 
+                                              d.getMinutes().toString().padStart(2,"0") + ":" + 
+                                              d.getSeconds().toString().padStart(2,"0");
+}
+setInterval(reloj, 1000);
+
+/* Radio */
+function playRadio() {
+  document.getElementById("radio").play();
+}
+
+/* Fondo aleatorio */
+const colores = ["blue", "red", "green", "yellow"];
+function fondo() {
+  document.body.style.background = colores[Math.floor(Math.random() * colores.length)];
+}
+setInterval(fondo, 4000);
 
 /* --- FUNCIONES DE VIDEO --- */
 
@@ -152,18 +172,14 @@ function activarVideo() {
   const btnCerrar = document.getElementById("btnCerrarVideo");
   const radio = document.getElementById("radio");
 
-  // 1. Pausamos la radio
   radio.pause();
-
-  // 2. Ocultamos el contenido central y el gif
   contenido.style.display = "none";
   document.getElementById("gif").style.display = "none";
 
-  // 3. Mostramos el contenedor y el botón de cerrar
   container.style.display = "block";
   btnCerrar.style.display = "block";
 
-  // 4. Insertamos el reproductor con tu ID de canal directamente (SIN VARIABLES)
+  // Aquí el enlace corregido con tu ID de canal
   container.innerHTML = '<iframe src="https://www.youtube.com" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
 }
 
@@ -179,7 +195,7 @@ function cerrarVideo() {
   contenido.style.display = "block";
   document.getElementById("gif").style.display = "block";
 }
-<script>
+</script>
 
 </body>
 </html>
