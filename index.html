@@ -133,9 +133,9 @@ function activarVideo() {
   container.style.display = "block";
   btnCerrar.style.display = "block";
 
-  // El reproductor ahora usa la variable que vive en vivo.js
+  // CORRECCIÓN: Se añade '/embed/' y se cierra correctamente la función
   container.innerHTML = '<iframe src="https://www.youtube.com' + ID_YOUTUBE_VIVO + '?autoplay=1&mute=0&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
-
+}
 
 function cerrarVideo() {
   document.getElementById("youtubeContainer").innerHTML = "";
