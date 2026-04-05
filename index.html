@@ -54,17 +54,46 @@ animation:latido 1.5s infinite;
 100%{transform:scale(1)}
 }
 
-/* boton */
+/* boton profesional */
 
 #btnRadio{
-margin-top:20px;
+margin:20px auto 0 auto;
 padding:15px 35px;
 background:#007BFF;
 color:white;
 border:none;
 font-size:20px;
-border-radius:10px;
+border-radius:12px;
 cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+transition:all 0.3s ease;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* animación cuando reproduce */
+
+.playing{
+background:red !important;
+animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.05)}
+100%{transform:scale(1)}
+}
+
+/* volumen */
+
+#volumenContainer{
+margin-top:15px;
+}
+
+#volumen{
+width:200px;
 }
 
 /* gif */
@@ -117,9 +146,16 @@ border:none;
 
 <br>
 
-<button id="btnRadio" onclick="playRadio()">ESCUCHANOS EN VIVO</button>
+<button id="btnRadio" onclick="playRadio()">
+<span id="icono">▶️</span>
+<span id="textoBtn">ESCUCHAR</span>
+</button>
 
-<audio id="radio" src=https://stream.zeno.fm/sxnh0y4vgchvv></audio>
+<div id="volumenContainer">
+<input type="range" id="volumen" min="0" max="1" step="0.01" value="1">
+</div>
+
+<audio id="radio" src="https://stream.zeno.fm/sxnh0y4vgchvv"></audio>
 
 </div>
 
@@ -153,11 +189,35 @@ document.getElementById("hora").innerHTML=h+":"+m+":"+s;
 
 setInterval(reloj,1000);
 
-/* radio */
+/* radio PRO */
 
 function playRadio(){
-document.getElementById("radio").play();
+let radio = document.getElementById("radio");
+let btn = document.getElementById("btnRadio");
+let icono = document.getElementById("icono");
+let texto = document.getElementById("textoBtn");
+
+if(radio.paused){
+    radio.play();
+    icono.innerHTML = "⏸️";
+    texto.innerHTML = "PAUSAR";
+    btn.classList.add("playing");
+}else{
+    radio.pause();
+    icono.innerHTML = "▶️";
+    texto.innerHTML = "ESCUCHAR";
+    btn.classList.remove("playing");
 }
+}
+
+/* volumen */
+
+let volumen = document.getElementById("volumen");
+let radio = document.getElementById("radio");
+
+volumen.addEventListener("input", function(){
+radio.volume = this.value;
+});
 
 /* fondo aleatorio */
 
