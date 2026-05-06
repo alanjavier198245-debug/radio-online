@@ -162,7 +162,7 @@ border:none;
 
 <div id="gif">
 <a href="https://alanjavier198245-debug.github.io/Confec4a./" target="_blank">
-<img src="animacion.gif">
+<img id="gifImg" src="">
 </a>
 </div>
 
@@ -241,21 +241,40 @@ document.getElementById("gif").style.display="none";
 document.getElementById("twitchContainer").style.display="block";
 
 }
-/* GIF cada 5 minutos por 10 segundos */
+/* GIFS ROTATIVOS */
+
+const gifs = [
+    "animacion1.gif",
+    "animacion2.gif",
+    "animacion3.gif"
+];
+
+let indiceGif = 0;
 
 function mostrarGif(){
-    let gif = document.getElementById("gif");
-    
-    gif.style.display = "block";
+    let gifContainer = document.getElementById("gif");
+    let gifImg = document.getElementById("gifImg");
 
+    // cambiar gif
+    gifImg.src = gifs[indiceGif];
+
+    // mostrar
+    gifContainer.style.display = "block";
+
+    // ocultar después de 10 segundos
     setTimeout(()=>{
-        gif.style.display = "none";
-    },10000); // 10 segundos
+        gifContainer.style.display = "none";
+    },10000);
+
+    // avanzar al siguiente
+    indiceGif++;
+    if(indiceGif >= gifs.length){
+        indiceGif = 0;
+    }
 }
 
-// cada 5 minutos (300000 ms)
+// cada 5 minutos
 setInterval(mostrarGif, 300000);
-</script>
 
 </body>
 </html>
