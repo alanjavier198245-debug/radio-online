@@ -54,7 +54,7 @@ animation:latido 1.5s infinite;
 100%{transform:scale(1)}
 }
 
-/* boton profesional */
+/* botón */
 
 #btnRadio{
 margin:20px auto 0 auto;
@@ -167,12 +167,10 @@ border:none;
 </div>
 
 <div id="twitchContainer">
-
 <iframe
 src="https://player.twitch.tv/?channel=sanrafaelradio1&parent=localhost&autoplay=true"
 allowfullscreen>
 </iframe>
-
 </div>
 
 <script>
@@ -187,10 +185,9 @@ let s=d.getSeconds().toString().padStart(2,"0");
 
 document.getElementById("hora").innerHTML=h+":"+m+":"+s;
 }
-
 setInterval(reloj,1000);
 
-/* radio PRO */
+/* radio */
 
 function playRadio(){
 let radio = document.getElementById("radio");
@@ -199,7 +196,7 @@ let icono = document.getElementById("icono");
 let texto = document.getElementById("textoBtn");
 
 if(radio.paused){
-    radio.play();
+    radio.play().catch(e => console.log("Error:", e));
     icono.innerHTML = "⏸️";
     texto.innerHTML = "PAUSAR";
     btn.classList.add("playing");
@@ -220,27 +217,23 @@ volumen.addEventListener("input", function(){
 radio.volume = this.value;
 });
 
-/* fondo aleatorio */
+/* fondo dinámico SIN repetir */
 
-const colores=["blue","red","green","yellow"];
+const colores=["#1e3c72","#2a5298","#ff4b2b","#ff416c","#11998e","#38ef7d"];
+let ultimoColor="";
 
 function fondo(){
-let c=colores[Math.floor(Math.random()*colores.length)];
-document.body.style.background=c;
+let c;
+do{
+    c = colores[Math.floor(Math.random()*colores.length)];
+}while(c === ultimoColor);
+
+ultimoColor = c;
+document.body.style.background = c;
 }
 
 setInterval(fondo,4000);
 
-/* modo twitch manual */
-
-function activarTwitch(){
-
-document.getElementById("contenido").style.display="none";
-document.getElementById("gif").style.display="none";
-
-document.getElementById("twitchContainer").style.display="block";
-
-}
 /* GIFS ROTATIVOS */
 
 const gifs = [
@@ -255,26 +248,30 @@ function mostrarGif(){
     let gifContainer = document.getElementById("gif");
     let gifImg = document.getElementById("gifImg");
 
-    // cambiar gif
     gifImg.src = gifs[indiceGif];
-
-    // mostrar
     gifContainer.style.display = "block";
 
-    // ocultar después de 10 segundos
     setTimeout(()=>{
         gifContainer.style.display = "none";
     },10000);
 
-    // avanzar al siguiente
     indiceGif++;
     if(indiceGif >= gifs.length){
         indiceGif = 0;
     }
 }
 
-// cada 5 minutos
-setInterval(mostrarGif, 300000);
+setInterval(mostrarGif, 300000); // 5 minutos
+
+/* twitch */
+
+function activarTwitch(){
+document.getElementById("contenido").style.display="none";
+document.getElementById("gif").style.display="none";
+document.getElementById("twitchContainer").style.display="block";
+}
+
+</script>
 
 </body>
 </html>
